@@ -1,5 +1,18 @@
 import pandas as pd
+import streamlit as st
 
+# Отображение исходных датасетов
+st.subheader("Первая часть")
+first_data = pd.read_csv('datasets/first_part.csv')
+st.write(first_data)
+
+st.subheader("Вторая часть")
+second_data = pd.read_csv('datasets/second_part.csv')
+st.write(second_data)
+
+st.subheader("Объединенный датасет")
+main_data = pd.read_csv('datasets/main_dataset.csv')
+st.write(main_data)
 
 # Объединение 2х датасетов
 def save_main_dataset():
@@ -12,29 +25,41 @@ def save_main_dataset():
                             how='left')
     main_dataset.to_csv('datasets/main_dataset.csv', index=False)
 
+on_save = st.toggle('Объеденить 2 датасета')
+if on_save:
+    save_main_dataset()
+
 # Полнота, проверка на пустые значения
 def completeness():
     data = pd.read_csv('datasets/main_dataset.csv')
 
     if data.isnull().values.any():
-        print("В датасете есть пустые значения.")
+        st.write("В датасете есть пустые значения.")
     else:
-        print("В датасете нет пустых значений.")
+        st.write("В датасете нет пустых значений.")
 
     missing_values = data.isnull().sum()
-    print("Количество пустых значений в каждой колонке:")
-    print(missing_values)
+    st.write("Количество пустых значений в каждой колонке:")
+    st.write(missing_values)
+
+on_completeness = st.toggle('Проверить полноту данных')
+if on_completeness:
+    completeness()
 
 # Уникальность, проверка на повторяемость данных
 def uniqueness():
     data = pd.read_csv('datasets/main_dataset.csv')
 
     if data.duplicated().any():
-        print("В датасете есть дубликаты.")
+        st.write("В датасете есть дубликаты.")
     else:
-        print("В датасете нет дубликатов.")
+        st.write("В датасете нет дубликатов.")
 
     duplicate_count = data.duplicated().sum()
-    print("Количество дубликатов в датасете:", duplicate_count)
+    st.write("Количество дубликатов в датасете:", duplicate_count)
 
-uniqueness()
+on_uniqueness = st.toggle('Проверить уникальность данных')
+if on_uniqueness:
+    uniqueness()
+
+
