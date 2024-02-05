@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+from sklearn.preprocessing import LabelEncoder
 
 # Отображение исходных датасетов
 st.subheader("Первая часть")
@@ -61,5 +62,17 @@ def uniqueness():
 on_uniqueness = st.toggle('Проверить уникальность данных')
 if on_uniqueness:
     uniqueness()
+
+on_describe = st.toggle('Посмотреть данные по параметрам')
+if on_describe:
+    st.write(main_data.describe())
+
+main_data['Date'] = pd.to_datetime(main_data['Date'])
+correlation_matrix = main_data.corr()
+
+# Визуализация корреляций с использованием тепловой карты
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.show()
 
 
