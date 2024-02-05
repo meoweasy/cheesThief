@@ -1,6 +1,17 @@
 import pandas as pd
 import streamlit as st
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import StandardScaler
+import statsmodels.api as sm
+import numpy as np
 
 # Отображение исходных датасетов
 st.subheader("Первая часть")
@@ -67,12 +78,42 @@ on_describe = st.toggle('Посмотреть данные по параметр
 if on_describe:
     st.write(main_data.describe())
 
-main_data['Date'] = pd.to_datetime(main_data['Date'])
-correlation_matrix = main_data.corr()
+def correl():
+    main_data['Date'] = pd.to_datetime(main_data['Date'])
+    le_district = LabelEncoder()
+    main_data['District'] = le_district.fit_transform(main_data['District'])
 
-# Визуализация корреляций с использованием тепловой карты
-plt.figure(figsize=(10, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
-plt.show()
+    le_warehouse = LabelEncoder()
+    main_data['Warehouse_Name'] = le_warehouse.fit_transform(main_data['Warehouse_Name'])
+    correlation_matrix = main_data.corr()
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    scatter_plot = sns.pairplot(main_data, height=2, aspect=1.5)
+    st.pyplot(scatter_plot)
+
+on_corr = st.toggle("Посмотреть корреляцию")
+if on_corr:
+    correl()
 
 
+def correl2():
+    df = pd.read_csv('datasets/main_dataset.csv')
+    filtered_df = df[(df['Warehouse_Name'] == 'Сметанинковы') & (df['District'] == 'Петрокотский') ]
+
+    filtered_df = filtered_df.drop(['Date'], axis=1)
+    st.write(filtered_df)
+
+    le_district = LabelEncoder()
+    filtered_df['District'] = le_district.fit_transform(filtered_df['District'])
+
+    le_warehouse = LabelEncoder()
+    filtered_df['Warehouse_Name'] = le_warehouse.fit_transform(filtered_df['Warehouse_Name'])
+    correlation_matrix = filtered_df.corr()
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    scatter_plot = sns.pairplot(filtered_df, height=2, aspect=1.5)
+    st.pyplot(scatter_plot)
+
+on_corr2 = st.toggle("Посмотреть корреляцию для определенного склада и района")
+if on_corr2:
+    correl2()
