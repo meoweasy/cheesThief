@@ -12,6 +12,15 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
 import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
 
 # Отображение исходных датасетов
 st.subheader("Первая часть")
@@ -98,10 +107,11 @@ if on_corr:
 
 def correl2():
     df = pd.read_csv('datasets/main_dataset.csv')
-    filtered_df = df[(df['Warehouse_Name'] == 'Сметанинковы') & (df['District'] == 'Петрокотский') ]
-
-    filtered_df = filtered_df.drop(['Date'], axis=1)
+    filtered_df = df[(df['Percent_of_Crime_Solved'] < 30) ]
     st.write(filtered_df)
+
+    le_district = LabelEncoder()
+    filtered_df['Date'] = le_district.fit_transform(filtered_df['Date'])
 
     le_district = LabelEncoder()
     filtered_df['District'] = le_district.fit_transform(filtered_df['District'])
@@ -117,3 +127,13 @@ def correl2():
 on_corr2 = st.toggle("Посмотреть корреляцию для определенного склада и района")
 if on_corr2:
     correl2()
+
+df = pd.read_csv('datasets/main_dataset.csv')
+filtered_df = df[(df['Percent_of_Crime_Solved'] < 30) ]
+
+# Группировка данных по дате для подсчета уникальных районов и складов
+grouped_df = filtered_df.groupby('Date').agg({'District': 'nunique', 'Warehouse_Name': 'nunique'})
+
+# Вывод результатов
+st.write(grouped_df)
+
